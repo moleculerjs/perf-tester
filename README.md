@@ -16,7 +16,7 @@ docker run -e TRANSPORTER=nats://nats:4222 moleculer/perf-tester
 ```
 
 ### Test transporter cluster
-If you would like to test transporter cluster nodes separately, you can start the test brokers individually with the `BROKER` env var.
+If you would like to test transporter cluster nodes separately, you can start the test brokers individually with the `MODE` env var.
 
 **Start the consumer**
 ```bash
