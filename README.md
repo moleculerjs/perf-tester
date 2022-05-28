@@ -4,7 +4,9 @@
 It's a simple tool to test your Moleculer based project tech stack including transporter, serializer, discoverer.
 
 ## Under the hood
-The test creates 2 ServiceBroker instances with a simple `echo` service which responses the received `params`.
+The test creates 2 ServiceBroker instances (producer and consumer) with a simple `echo` service which responses the received `params`. The producer calls the `echo` service and waits for the response one-by-one continuously.
+
+> You can start the consumer and producer brokers separately (`MODE` env var) in order to test transporter cluster, or generate more request with multiple consumers and/or producers.
 
 ## Usage
 
@@ -16,12 +18,12 @@ docker run -e TRANSPORTER=nats://nats:4222 moleculer/perf-tester
 ### Test transporter cluster
 If you would like to test transporter cluster nodes separately, you can start the test brokers individually with the `BROKER` env var.
 
-Start the consumer
+**Start the consumer**
 ```bash
 docker run -e TRANSPORTER=nats://nats-1:4222 -e MODE=consumer moleculer/perf-tester
 ```
 
-Start the producer
+**Start the producer**
 ```bash
 docker run -e TRANSPORTER=nats://nats-2:4222 -e MODE=producer moleculer/perf-tester
 ```
@@ -36,6 +38,7 @@ docker run -e TRANSPORTER=nats://nats-2:4222 -e MODE=producer moleculer/perf-tes
 | `DISCOVERER` | `Local` | Discoverer name. |
 | `DURATION` | `5` | Test duration in seconds. If `null`, the test is running infinity. |
 | `MODE` | `consumer`, `producer`, `null` | Test mode. |
+| `NODE_ID` | `consumer-123` | Custom nodeID. Use only in `consumer` or `producer` mode if you want custom nodeID for brokers. Otherwise `ServiceBroker` generates from hostname and PID. |
 
 ## License
 The project is available under the [MIT license](https://tldrlegal.com/license/mit-license).

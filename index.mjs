@@ -10,6 +10,7 @@ if (duration != null) {
 	duration = Number(duration);
 }
 const mode = process.env.MODE;
+let nodeID = process.env.NODE_ID;
 
 console.log("Performance tester");
 console.log("==================");
@@ -17,11 +18,11 @@ console.log("");
 console.log("  Transporter:", transporter);
 console.log("  Serializer:", serializer);
 console.log("  Discoverer:", discoverer);
-if (duration)
-	console.log("  Test duration:", duration, "seconds");
-if (mode) {
-	console.log("  Mode:", mode);
-}
+if (duration) console.log("  Test duration:", duration, "seconds");
+if (mode) console.log("  Mode:", mode);
+
+if (nodeID)	console.log("  Node ID:", nodeID);
+
 console.log("");
 
 let b1, b2;
@@ -29,7 +30,7 @@ let b1, b2;
 if (!mode || mode == "producer") {
 	b1 = new ServiceBroker({
 		namespace: "perf-test",
-		nodeID: "producer-" + process.pid,
+		nodeID,
 		logger: true,
 		transporter,
 		serializer,
@@ -40,7 +41,7 @@ if (!mode || mode == "producer") {
 if (!mode || mode == "consumer") {
 	b2 = new ServiceBroker({
 		namespace: "perf-test",
-		nodeID: "consumer-" + process.pid,
+		nodeID,
 		logger: true,
 		transporter,
 		serializer,
@@ -93,25 +94,24 @@ async function start() {
 				});
 		}
 
-		setTimeout(() => {
-			let startTime = Date.now();
+		await b1.waitForServices(["echo"]);
+		let startTime = Date.now();
 
-			setInterval(() => {
-				let rps = count / ((Date.now() - startTime) / 1000);
-				console.log(rps.toLocaleString("en-US", { maximumFractionDigits: 0 }), "req/s");
-				count = 0;
-				startTime = Date.now();
+		setInterval(() => {
+			let rps = count / ((Date.now() - startTime) / 1000);
+			console.log(rps.toLocaleString("en-US", { maximumFractionDigits: 0 }), "req/s");
+			count = 0;
+			startTime = Date.now();
 
-				if (duration != null) {
-					if (Date.now() - beginTime > duration * 1000) {
-						console.log("Test finished.");
-						process.exit(0);
-					}
+			if (duration != null) {
+				if (Date.now() - beginTime > duration * 1000) {
+					console.log("Test finished.");
+					process.exit(0);
 				}
-			}, 1000);
-
-			b1.waitForServices(["echo"]).then(() => doRequest());
+			}
 		}, 1000);
+
+		doRequest();
 	}
 }
 
