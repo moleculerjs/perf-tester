@@ -20,7 +20,6 @@ console.log("  Serializer:", serializer);
 console.log("  Discoverer:", discoverer);
 if (duration) console.log("  Test duration:", duration, "seconds");
 if (mode) console.log("  Mode:", mode);
-
 if (nodeID)	console.log("  Node ID:", nodeID);
 
 console.log("");
@@ -28,9 +27,10 @@ console.log("");
 let b1, b2;
 
 if (!mode || mode == "producer") {
+	let b1NodeID = !mode ? `producer-${nodeID || process.pid}` : nodeID;
 	b1 = new ServiceBroker({
 		namespace: "perf-test",
-		nodeID,
+		nodeID: b1NodeID,
 		logger: true,
 		transporter,
 		serializer,
@@ -39,9 +39,10 @@ if (!mode || mode == "producer") {
 }
 
 if (!mode || mode == "consumer") {
+	let b2NodeID = !mode ? `consumer-${nodeID || process.pid}` : nodeID;
 	b2 = new ServiceBroker({
 		namespace: "perf-test",
-		nodeID,
+		nodeID: b2NodeID,
 		logger: true,
 		transporter,
 		serializer,

@@ -12,7 +12,7 @@ The test creates 2 ServiceBroker instances (producer and consumer) with a simple
 
 Run the tester with NATS transporter
 ```bash
-docker run -e TRANSPORTER=nats://nats:4222 moleculer/perf-tester
+docker run -e TRANSPORTER=nats://demo.nats.io:4222 moleculer/perf-tester
 ```
 
 ### Test transporter cluster
