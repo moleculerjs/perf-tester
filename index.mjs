@@ -10,7 +10,10 @@ let duration = process.env.DURATION || null;
 if (duration != null) {
 	duration = Number(duration);
 }
-const mode = process.env.MODE;
+let mode = process.env.MODE;
+if (mode != "consumer" && mode != "producer") {
+	mode = null;
+}
 let nodeID = process.env.NODE_ID;
 
 console.log("Performance tester");
