@@ -1,7 +1,7 @@
 "use strict";
 
-import { Consumer } from "./consumer.mjs";
-import { Producer } from "./producer.mjs";
+import { Consumer } from "./src/consumer.mjs";
+import { Producer } from "./src/producer.mjs";
 
 const transporter = process.env.TRANSPORTER || "Fake";
 const serializer = process.env.SERIALIZER || "JSON";
@@ -21,7 +21,7 @@ console.log("  Serializer:", serializer);
 console.log("  Discoverer:", discoverer);
 if (duration) console.log("  Test duration:", duration, "seconds");
 if (mode) console.log("  Mode:", mode);
-if (nodeID)	console.log("  Node ID:", nodeID);
+if (nodeID) console.log("  Node ID:", nodeID);
 
 console.log("");
 
@@ -31,7 +31,9 @@ if (!mode || mode == "producer") {
 	producer = new Producer({
 		transporter,
 		serializer,
-		discoverer,
+		registry: {
+			discoverer
+		},
 		nodeID: !mode ? `producer-${nodeID || process.pid}` : nodeID,
 		mode,
 		duration
@@ -52,7 +54,6 @@ if (!mode || mode == "consumer") {
 async function start() {
 	if (consumer) await consumer.start();
 	if (producer) await producer.start();
-	
 }
 
 start().catch(err => console.error(err));
