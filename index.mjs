@@ -1,6 +1,7 @@
 "use strict";
 
-import { ServiceBroker } from "moleculer";
+import { Consumer } from "./consumer.mjs";
+import { Producer } from "./producer.mjs";
 
 const transporter = process.env.TRANSPORTER || "Fake";
 const serializer = process.env.SERIALIZER || "JSON";
@@ -24,96 +25,34 @@ if (nodeID)	console.log("  Node ID:", nodeID);
 
 console.log("");
 
-let b1, b2;
+let consumer, producer;
 
 if (!mode || mode == "producer") {
-	let b1NodeID = !mode ? `producer-${nodeID || process.pid}` : nodeID;
-	b1 = new ServiceBroker({
-		namespace: "perf-test",
-		nodeID: b1NodeID,
-		logger: true,
+	producer = new Producer({
 		transporter,
 		serializer,
-		discoverer
+		discoverer,
+		nodeID: !mode ? `producer-${nodeID || process.pid}` : nodeID,
+		mode,
+		duration
 	});
 }
 
 if (!mode || mode == "consumer") {
-	let b2NodeID = !mode ? `consumer-${nodeID || process.pid}` : nodeID;
-	b2 = new ServiceBroker({
-		namespace: "perf-test",
-		nodeID: b2NodeID,
-		logger: true,
+	consumer = new Consumer({
 		transporter,
 		serializer,
-		discoverer
-	});
-
-	b2.createService({
-		name: "echo",
-		actions: {
-			reply(ctx) {
-				return ctx.params;
-			}
-		}
+		discoverer,
+		nodeID: !mode ? `consumer-${nodeID || process.pid}` : nodeID,
+		mode,
+		duration
 	});
 }
 
 async function start() {
-	console.log("Starting brokers...");
-
-	if (!mode || mode == "consumer") {
-		await b2.start();
-	}
-
-	if (!mode || mode == "producer") {
-		await b1.start();
-
-		await (new Promise(resolve => setTimeout(resolve, 1000)));
-
-		console.log("Brokers started.");
-		console.log("Starting test...");
-
-		let beginTime = Date.now();
-		let count = 0;
-		function doRequest() {
-			count++;
-			return b1
-				.call("echo.reply", { a: count })
-				.then(res => {
-					if (count % 10000) {
-						// Fast cycle
-						doRequest();
-					} else {
-						// Slow cycle
-						setImmediate(() => doRequest());
-					}
-					return res;
-				})
-				.catch(err => {
-					throw err;
-				});
-		}
-
-		await b1.waitForServices(["echo"]);
-		let startTime = Date.now();
-
-		setInterval(() => {
-			let rps = count / ((Date.now() - startTime) / 1000);
-			console.log(rps.toLocaleString("en-US", { maximumFractionDigits: 0 }), "req/s");
-			count = 0;
-			startTime = Date.now();
-
-			if (duration != null) {
-				if (Date.now() - beginTime > duration * 1000) {
-					console.log("Test finished.");
-					process.exit(0);
-				}
-			}
-		}, 1000);
-
-		doRequest();
-	}
+	if (producer) await producer.start();
+	if (consumer) await consumer.start();
+	
 }
 
 start().catch(err => console.error(err));
