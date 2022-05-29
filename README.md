@@ -38,9 +38,9 @@ If you would like to measure the throughput of the system, set the `FLOOD` env v
 
 | Variable | Example value | Description |
 | -------- | ------------- | ----------- |
-| `TRANSPORTER` | `NATS` or `redis://redis:6379` | Transporter connection string or name. |
-| `SERIALIZER` | `JSON` | Serializer name. |
-| `DISCOVERER` | `Local` | Discoverer name. |
+| `TRANSPORTER` | `NATS` or `redis://redis:6379` | Transporter connection string or name. Supports all built-in transporters. |
+| `SERIALIZER` | `JSON` | Serializer name. Supports all built-in serializers. |
+| `DISCOVERER` | `Local` | Discoverer name. Supports all built-in discovers. |
 | `DURATION` | `5` | Test duration in seconds. If `null`, the test is running infinity. |
 | `MODE` | `consumer`, `producer`, `null` | Test mode. |
 | `NODE_ID` | `consumer-123` | Custom nodeID. Use only in `consumer` or `producer` mode if you want custom nodeID for brokers. Otherwise `ServiceBroker` generates from hostname and PID. |
