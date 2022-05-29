@@ -16,6 +16,8 @@
     "etcd3": "^1.1.0",
     "ioredis": "^5.0.5",
     "kafka-node": "^5.0.0",
+    "kleur": "^4.1.4",
+    "lodash": "^4.17.21",
     "moleculer": "^0.14.21",
     "mqtt": "^4.3.7",
     "msgpack5": "^6.0.0",
@@ -24,6 +26,7 @@
     "notepack.io": "^3.0.1",
     "protobufjs": "^6.11.3",
     "rhea-promise": "^2.1.0",
-    "thrift": "^0.16.0"
+    "thrift": "^0.16.0",
+    "tiny-human-time": "^1.2.0"
   }
 }

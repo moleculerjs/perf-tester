@@ -50,8 +50,8 @@ if (!mode || mode == "consumer") {
 }
 
 async function start() {
-	if (producer) await producer.start();
 	if (consumer) await consumer.start();
+	if (producer) await producer.start();
 	
 }
 
